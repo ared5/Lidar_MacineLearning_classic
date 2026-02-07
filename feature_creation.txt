@@ -1,0 +1,84 @@
+features_creation.py - Documentación de funciones de creación de features
+=====================================================================
+
+Este archivo resume TODAS las funciones copiadas desde el notebook
+ML_workflow_newTargets_PRETIME_HubLoads.ipynb (bloques de feature engineering).
+
+1) create_vlos_lags(df, lag_seconds_list=[2,5,8,11,14,17,20,23,26])
+---------------------------------------------------------------------
+Qué hace:
+- Busca columnas que contengan 'LAC_VLOS'.
+- Calcula el paso temporal dt usando la columna Time (o usa 0.02 por defecto).
+- Crea columnas retrasadas (lags) para cada señal VLOS en los segundos indicados.
+- Ejemplo de columna creada: LAC_VLOS_Beam1_lag5s.
+
+2) create_azimuth_components(df)
+--------------------------------
+Qué hace:
+- Usa la columna 'Rotor azimuth angle'.
+- Detecta si el azimut está en grados o radianes.
+- Crea dos variables cíclicas: sin_rotor_azimuth y cos_rotor_azimuth.
+
+3) lowpass_filter(signal_data, cutoff, fs, order=2)
+---------------------------------------------------
+Qué hace:
+- Aplica un filtro Butterworth pasa-bajo a una señal 1D.
+
+4) lowpass_filter_safe(signal_data, cutoff, fs, order=2)
+--------------------------------------------------------
+Qué hace:
+- Envoltorio seguro de lowpass_filter.
+- Si falla, devuelve la señal original.
+
+5) create_frequency_components_1P_2P(df, apply_filtering=True)
+---------------------------------------------------------------
+Qué hace:
+- Usa Time, Rotor speed, Rotor azimuth angle, Blade root 1 My y Blade root 2 My.
+- Calcula M_0, M_1c, M_1s, M_2c y M_2s.
+
+6) bandpass_filter(signal_data, lowcut, highcut, fs, order=2)
+--------------------------------------------------------------
+Qué hace:
+- Aplica un filtro Butterworth pasa-banda a una señal 1D.
+
+7) bandpass_filter_safe(signal_data, lowcut, highcut, fs, order=2)
+-------------------------------------------------------------------
+Qué hace:
+- Envoltorio seguro de bandpass_filter.
+- Si falla, devuelve la señal original.
+
+8) create_pitch_coleman_features(df)
+------------------------------------
+Qué hace:
+- Calcula pitch_0, pitch_1c, pitch_1s y sus rates, además de rotor_speed_rate.
+
+9) create_wind_field_statistics(df, rotation_offset=None)
+---------------------------------------------------------
+Qué hace:
+- Crea U_mean, U_std, U_shear_vert y U_shear_horiz desde BEAMs LIDAR.
+
+10) create_wind_statistics_lags(df, lag_times=[2,5,8,11,14,17,20,23,26])
+-------------------------------------------------------------------------
+Qué hace:
+- Crea lags para U_mean, U_std, U_shear_vert y U_shear_horiz.
+
+Ejemplo pequeño de uso (mismo orden base del notebook)
+======================================================
+
+from features_creation import (
+    create_vlos_lags,
+    create_azimuth_components,
+    create_frequency_components_1P_2P,
+    create_pitch_coleman_features,
+    create_wind_field_statistics,
+    create_wind_statistics_lags,
+)
+
+# Suponiendo que ya tienes df
+df = create_vlos_lags(df)
+df = create_azimuth_components(df)
+df = create_frequency_components_1P_2P(df)
+df = create_pitch_coleman_features(df)
+df = create_wind_field_statistics(df, rotation_offset=0)
+df = create_wind_statistics_lags(df)
+df = df.dropna().reset_index(drop=True)
