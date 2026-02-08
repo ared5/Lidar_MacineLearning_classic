@@ -1,2 +1,0 @@
-Model,Train_Samples,Test_Samples,Features,Targets,Avg_RMSE_Train,Avg_RMSE_Test,Avg_R2_Train,Avg_R2_Test,N_Estimators,Max_Depth,Learning_Rate,Subsample,Colsample_Bytree,Tree_Method
-XGBoost,1635957,430515,151,3,160869.6102897882,238720.01597480255,0.8467093507448832,0.7362679839134216,100,6,0.1,0.8,0.8,hist

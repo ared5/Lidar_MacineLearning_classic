@@ -1,2 +1,0 @@
-Model,Training_Time_seconds,Train_Samples,Test_Samples,Features,Targets,Avg_RMSE_Train,Avg_RMSE_Test,Avg_R2_Train,Avg_R2_Test,Alpha
-Ridge Regression,87.68973851203918,1635957,430515,151,3,311941.50803119753,358187.59268732584,0.5662775635719299,0.5710445046424866,1.0
