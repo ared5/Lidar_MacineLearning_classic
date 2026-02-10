@@ -1,0 +1,16 @@
+# Series para TEST (14 series, 19.4%)
+# Definido manualmente
+4
+9
+14
+19
+24
+29
+34
+39
+44
+49
+54
+59
+64
+69

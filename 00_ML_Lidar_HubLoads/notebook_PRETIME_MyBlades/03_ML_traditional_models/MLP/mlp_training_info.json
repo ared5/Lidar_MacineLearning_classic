@@ -1,0 +1,14 @@
+{
+    "timestamp": "2026-02-09 13:38:40",
+    "model_type": "MLPRegressor",
+    "sklearn_version": "1.7.2",
+    "n_samples": 1658858,
+    "n_features": 45,
+    "n_outputs": 3,
+    "training_time_minutes": 1.59,
+    "n_iterations": 23,
+    "final_loss": 0.1087845112983731,
+    "train_mae_global": 0.309317022562027,
+    "train_rmse_global": 0.4558708424829676,
+    "train_r2_global": 0.7920172810554504
+}

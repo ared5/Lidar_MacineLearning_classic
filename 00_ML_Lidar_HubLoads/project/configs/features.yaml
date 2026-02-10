@@ -1,0 +1,114 @@
+# ============================================================================
+# CONFIGURACIÓN DE FEATURES - Wind Turbine ML
+# ============================================================================
+# Define qué features se extraen de las simulaciones Bladed y se usan en ML
+
+# Variables físicas base a extraer de Bladed
+bladed_variables:
+  # Hub rotating - Momentos flectores (TARGETS)
+  hub_rotating:
+    - "Blade root 1 My"
+    - "Blade root 2 My"
+  
+  # Pitch actuator - Ángulos de pitch
+  pitch_actuator:
+    - "Blade 1 pitch angle"
+    - "Blade 2 pitch angle"
+  
+  # Drive train - Azimuth y velocidad del rotor
+  drive_train:
+    - "Rotor azimuth angle"
+  
+  # Summary - Velocidad del rotor
+  summary:
+    - "Rotor speed"
+  
+  # External controller - VLOS y Yaw Error
+  external_controller:
+    - "LAC_VLOS_BEAM0_RANGE5"
+    - "LAC_VLOS_BEAM1_RANGE5"
+    - "LAC_VLOS_BEAM2_RANGE5"
+    - "LAC_VLOS_BEAM3_RANGE5"
+    - "LAC_VLOS_BEAM4_RANGE5"
+    - "LAC_VLOS_BEAM5_RANGE5"
+    - "LAC_VLOS_BEAM6_RANGE5"
+    - "LAC_VLOS_BEAM7_RANGE5"
+    - "OPER_MEAS_YAWERROR"
+
+# Features engineered - transformaciones y nuevas variables
+engineered_features:
+  # Componentes trigonométricas
+  trigonometric:
+    enabled: true
+    variables:
+      - source: "Rotor azimuth angle"
+        sin_name: "sin_rotor_azimuth"
+        cos_name: "cos_rotor_azimuth"
+      - source: "OPER_MEAS_YAWERROR"
+        sin_name: "sin_yawerror"
+        cos_name: "cos_yawerror"
+  
+  # Lags temporales de VLOS
+  vlos_lags:
+    enabled: true
+    lag_seconds: [2, 5, 8, 11, 14, 17, 20, 23, 26]
+    range_filter:
+      enabled: true
+      range_values: [5]  # Solo RANGE5
+  
+  # Transformación Coleman (0P, 1P, 2P)
+  coleman_transform:
+    enabled: true
+    apply_filtering: true  # Aplicar filtros pasa-banda
+    components:
+      - "M_0"   # Componente 0P (lento)
+      - "M_1c"  # Componente 1P coseno
+      - "M_1s"  # Componente 1P seno
+      - "M_2c"  # Componente 2P coseno
+      - "M_2s"  # Componente 2P seno
+  
+  # Estadísticas de viento
+  wind_statistics:
+    enabled: true
+    variables:
+      - "U_mean"          # Media de velocidad
+      - "U_std"           # Desviación estándar
+      - "U_shear_vert"    # Shear vertical
+      - "U_shear_horiz"   # Shear horizontal
+      - "U0_RANGE5"       # Velocidad en range 5
+      - "dU_dy_RANGE5"    # Gradiente horizontal
+      - "dU_dz_RANGE5"    # Gradiente vertical
+  
+  # Transformaciones de pitch a Coleman
+  pitch_coleman:
+    enabled: true
+    components:
+      - "pitch_0"       # Componente 0P
+      - "pitch_1c"      # Componente 1P coseno
+      - "pitch_1s"      # Componente 1P seno
+    rates:              # Derivadas temporales
+      - "pitch_0_rate"
+      - "pitch_1c_rate"
+      - "pitch_1s_rate"
+
+# Targets para predicción
+targets:
+  primary:
+    - "Blade root 1 My"
+    - "Blade root 2 My"
+  
+  coleman_components:
+    - "M_0"
+    - "M_1c"
+    - "M_1s"
+    - "M_2c"
+    - "M_2s"
+
+# Features a usar en ML (grupos)
+ml_features:
+  use_base: true              # Usar features base
+  use_trigonometric: true     # Usar componentes trigonométricas
+  use_vlos_lags: true         # Usar lags de VLOS
+  use_coleman: true           # Usar componentes Coleman
+  use_wind_stats: true        # Usar estadísticas de viento
+  use_pitch_coleman: true     # Usar pitch en Coleman
